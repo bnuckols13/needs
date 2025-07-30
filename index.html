@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Support Group: Emotional Needs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .indicator-dot.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+
+        .phase {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .phase.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .phase-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .phase-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .phase-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .phase-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .content-section {
+            margin-bottom: 30px;
+        }
+
+        .content-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .content-section p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .weather-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .weather-option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .weather-option:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+
+        .weather-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .weather-option .emoji {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .corners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .corner-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .corner-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .corner-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .corner-card textarea {
+            width: 100%;
+            min-height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: inherit;
+            resize: vertical;
+            background: white;
+        }
+
+        .corner-card textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .feeling-need-game {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .statement-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .statement-card.feeling {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+        }
+
+        .statement-card.need {
+            border-color: #4ecdc4;
+            background: linear-gradient(135deg, #4ecdc4, #44bd32);
+            color: white;
+        }
+
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .station-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .station-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .station-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .station-card h4 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .translation-exercise {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .translation-step {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .translation-step h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .translation-step input,
+        .translation-step textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .translation-step input:focus,
+        .translation-step textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .progress-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .commitment-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .commitment-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .commitment-card:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .commitment-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .insight-input {
+            margin: 20px 0;
+        }
+
+        .insight-input textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .insight-input textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .corners-grid,
+            .stations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Recovery Support Group: Emotional Needs</h1>
+            <p>Understanding Emotional Needs Through Nonviolent Communication</p>
+        </div>
+
+        <div class="main-content">
+            <div class="phase-indicator">
+                <div class="indicator-dot active" onclick="goToPhase(0)"></div>
+                <div class="indicator-dot" onclick="goToPhase(1)"></div>
+                <div class="indicator-dot" onclick="goToPhase(2)"></div>
+                <div class="indicator-dot" onclick="goToPhase(3)"></div>
+                <div class="indicator-dot" onclick="goToPhase(4)"></div>
+                <div class="indicator-dot" onclick="goToPhase(5)"></div>
+            </div>
+
+            <!-- Phase 0: Welcome -->
+            <div class="phase active" id="phase-0">
+                <div class="phase-header">
+                    <div class="phase-icon">💙</div>
+                    <h2 class="phase-title">Welcome to Recovery Support</h2>
+                    <p class="phase-subtitle">Your journey to emotional connection and recovery begins here</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>What You'll Learn Today</h3>
+                    <p>Today we're becoming emotional meteorologists - experts at reading our own inner weather and understanding the deeper climate needs beneath our feelings.</p>
+                    
+                    <p><strong>Primary Learning Target:</strong> "Emotional Needs Translation Skill" - The ability to identify underlying emotional needs beneath surface feelings and translate them into clear, connectable requests.</p>
+                    
+                    <p>This skill builds authentic connection while reducing isolation and helping you communicate your needs directly rather than through behaviors.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>The Journey Ahead</h3>
+                    <p>We'll move through five phases together:</p>
+                    <ul style="margin-left: 20px; color: #555;">
+                        <li><strong>Emotional Weather Station:</strong> Grounding and present moment awareness</li>
+                        <li><strong>Four Corners Check-In:</strong> Exploring different aspects of your experience</li>
+                        <li><strong>Learning Translation Skills:</strong> Understanding feelings vs. needs</li>
+                        <li><strong>Practice Lab:</strong> Applying these skills in real scenarios</li>
+                        <li><strong>Integration:</strong> Committing to ongoing practice</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 1: Grounding - Emotional Weather Station -->
+            <div class="phase" id="phase-1">
+                <div class="phase-header">
+                    <div class="phase-icon">🌤️</div>
+                    <h2 class="phase-title">Emotional Weather Station</h2>
+                    <p class="phase-subtitle">Grounding & Present Moment Awareness</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Step 1: Weather Check</h3>
+                    <p>Take three deep breaths with me... If your emotional state right now was weather, what would it be?</p>
+                    
+                    <div class="weather-selector">
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">☀️</span>
+                            <span>Sunny & Clear</span>
+                        </div>
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">☁️</span>
+                            <span>Cloudy</span>
+                        </div>
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">⛈️</span>
+                            <span>Stormy</span>
+                        </div>
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">🌫️</span>
+                            <span>Foggy</span>
+                        </div>
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">🌧️</span>
+                            <span>Light Rain</span>
+                        </div>
+                        <div class="weather-option" onclick="selectWeather(this)">
+                            <span class="emoji">🌪️</span>
+                            <span>Hurricane</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Step 2: Climate vs. Weather</h3>
+                    <p><strong>Weather</strong> = how you feel right now (anxious, excited, tired)</p>
+                    <p><strong>Climate</strong> = what you need consistently to thrive (safety, understanding, autonomy)</p>
+                    <p>Weather is temporary, but climate tells us about deeper patterns.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Step 3: Body Compass Reading</h3>
+                    <p>Notice where you feel this weather in your body... And notice - underneath the weather, what does your system seem to be asking for?</p>
+                    
+                    <div class="insight-input">
+                        <textarea placeholder="What is your body telling you that you need right now? No need to figure it out perfectly, just notice what comes up..." id="bodyCompass"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Four Corners Check-In -->
+            <div class="phase" id="phase-2">
+                <div class="phase-header">
+                    <div class="phase-icon">🧭</div>
+                    <h2 class="phase-title">Four Corners of Being Human</h2>
+                    <p class="phase-subtitle">Multi-Category Check-In</p>
+                </div>
+                
+                <div class="content-section">
+                    <p>Share from any corner that's calling to you today. Pick the areas that resonate and take your time with each one.</p>
+                </div>
+
+                <div class="corners-grid">
+                    <div class="corner-card">
+                        <h4>🔋 Energy & Nervous System</h4>
+                        <p><em>"What's your energy like right now?"</em></p>
+                        <textarea placeholder="My energy feels like... (a battery percentage, a temperature, a speed setting)
+My nervous system is... (revved up, settling down, somewhere in between)
+The pace I need today is... (fast and stimulating, slow and gentle, somewhere flexible)"></textarea>
+                    </div>
+                    
+                    <div class="corner-card">
+                        <h4>🧠 What's Taking Up Space</h4>
+                        <p><em>"What's occupying mental/emotional real estate?"</em></p>
+                        <textarea placeholder="Something that's been on repeat in my mind is...
+A relationship dynamic I'm navigating is...
+A challenge I'm working through is..."></textarea>
+                    </div>
+                    
+                    <div class="corner-card">
+                        <h4>🌱 Growth & Awareness</h4>
+                        <p><em>"What are you noticing or learning about yourself?"</em></p>
+                        <textarea placeholder="Something I'm becoming more aware of is...
+A pattern I'm starting to recognize is...
+Something I'm proud of myself for this week is...
+A way I'm growing or changing is..."></textarea>
+                    </div>
+                    
+                    <div class="corner-card">
+                        <h4>🌟 Hopes & Needs</h4>
+                        <p><em>"What are you hoping for or needing?"</em></p>
+                        <textarea placeholder="Something I'm hoping for in my relationships is...
+What I need from this experience today is...
+A way I want to grow in how I connect with people is...
+Something I need more of in my life is..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 3: Learning - The Translation Skill -->
+            <div class="phase" id="phase-3">
+                <div class="phase-header">
+                    <div class="phase-icon">🎯</div>
+                    <h2 class="phase-title">The Translation Skill</h2>
+                    <p class="phase-subtitle">Learning Feelings vs. Needs</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Feeling or Need? Interactive Game</h3>
+                    <p>Click on each statement to reveal whether it's a feeling (emotional weather) or a need (climate requirement):</p>
+                    
+                    <div class="feeling-need-game">
+                        <div class="statement-card" onclick="revealAnswer(this, 'feeling')">
+                            <p>"I feel frustrated"</p>
+                            <div class="answer" style="display: none;">This is a FEELING! ❤️</div>
+                        </div>
+                        <div class="statement-card" onclick="revealAnswer(this, 'need')">
+                            <p>"I need to be understood"</p>
+                            <div class="answer" style="display: none;">This is a NEED! 🌟</div>
+                        </div>
+                        <div class="statement-card" onclick="revealAnswer(this, 'feeling')">
+                            <p>"I feel ignored"</p>
+                            <div class="answer" style="display: none;">This is a FEELING! ❤️</div>
+                        </div>
+                        <div class="statement-card" onclick="revealAnswer(this, 'need')">
+                            <p>"I need connection"</p>
+                            <div class="answer" style="display: none;">This is a NEED! 🌟</div>
+                        </div>
+                        <div class="statement-card" onclick="revealAnswer(this, 'feeling')">
+                            <p>"I feel overwhelmed"</p>
+                            <div class="answer" style="display: none;">This is a FEELING! ❤️</div>
+                        </div>
+                        <div class="statement-card" onclick="revealAnswer(this, 'need')">
+                            <p>"I need support"</p>
+                            <div class="answer" style="display: none;">This is a NEED! 🌟</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>The Translation Process</h3>
+                    <p><strong>Key Teaching:</strong> Feelings are the messengers - they tell us about our needs. Needs are universal - we all share them.</p>
+                    
+                    <div class="translation-exercise">
+                        <h4>Practice with a Real Example</h4>
+                        <p>Think of a recent moment when you felt frustrated with a friend...</p>
+                        
+                        <div class="translation-step">
+                            <h4>Step 1: Notice the Weather (Feeling)</h4>
+                            <p>What am I experiencing emotionally right now?</p>
+                            <input type="text" placeholder="I felt annoyed/hurt/confused when..." id="feelingInput">
+                        </div>
+                        
+                        <div class="translation-step">
+                            <h4>Step 2: Find the Climate Need (Need)</h4>
+                            <p>What is this feeling telling me I need?</p>
+                            <input type="text" placeholder="I needed to feel heard/valued/included..." id="needInput">
+                        </div>
+                        
+                        <div class="translation-step">
+                            <h4>Step 3: Make a Clear Request</h4>
+                            <p>How can I ask for that need to be met?</p>
+                            <textarea placeholder="Could we talk about what happened? I want to understand your perspective and share mine..." id="requestInput"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>"Real Talk" Moment</h3>
+                    <p>This is simple but not easy. Sometimes we've been trained to not even notice our needs, or to think they don't matter. Sometimes we might have gotten used to expressing needs through behaviors instead of words. That's normal and it makes sense - we're just learning a new language.</p>
+                </div>
+            </div>
+
+            <!-- Phase 4: Application Stations - Needs Lab -->
+            <div class="phase" id="phase-4">
+                <div class="phase-header">
+                    <div class="phase-icon">⚡</div>
+                    <h2 class="phase-title">Needs Lab</h2>
+                    <p class="phase-subtitle">Application & Practice</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>Choose Your Practice Station</h3>
+                    <p>Select the station that feels most relevant to your current growth edge:</p>
+                </div>
+
+                <div class="stations-grid">
+                    <div class="station-card" onclick="selectStation(this, 'translation')">
+                        <h4>🗣️ Translation Station</h4>
+                        <p>Practice communication with real-world scenarios and difficult conversations</p>
+                    </div>
+                    
+                    <div class="station-card" onclick="selectStation(this, 'body')">
+                        <h4>🧘 Body Wisdom Station</h4>
+                        <p>Explore how different needs feel in your body and develop your inner compass</p>
+                    </div>
+                    
+                    <div class="station-card" onclick="selectStation(this, 'boundary')">
+                        <h4>🛡️ Boundary Lab</h4>
+                        <p>Practice saying no while staying connected and maintaining relationships</p>
+                    </div>
+                    
+                    <div class="station-card" onclick="selectStation(this, 'repair')">
+                        <h4>🔧 Repair Shop</h4>
+                        <p>Learn how to repair and reconnect when communication goes wrong</p>
+                    </div>
+                </div>
+
+                <div id="station-content" style="margin-top: 30px;"></div>
+            </div>
+
+            <!-- Phase 5: Integration & Commitment -->
+            <div class="phase" id="phase-5">
+                <div class="phase-header">
+                    <div class="phase-icon">✨</div>
+                    <h2 class="phase-title">Integration & Commitment</h2>
+                    <p class="phase-subtitle">Taking It Forward</p>
+                </div>
+                
+                <div class="content-section">
+                    <h3>One Thing That Clicked</h3>
+                    <p>What insight or "aha moment" stood out for you today?</p>
+                    
+                    <div class="insight-input">
+                        <textarea placeholder="Share one thing that felt different about how you understand feelings vs. needs..." id="clickedInsight"></textarea>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>This Week's Small Experiment</h3>
+                    <p>Choose one specific practice to try this week:</p>
+                    
+                    <div class="commitment-cards">
+                        <div class="commitment-card" onclick="selectCommitment(this)">
+                            <h4>🔍 Notice & Ask</h4>
+                            <p>I'm going to notice when I feel frustrated and ask myself what I need</p>
+                        </div>
+                        
+                        <div class="commitment-card" onclick="selectCommitment(this)">
+                            <h4>💬 Practice Translation</h4>
+                            <p>I'm going to practice one translation with a specific person this week</p>
+                        </div>
+                        
+                        <div class="commitment-card" onclick="selectCommitment(this)">
+                            <h4>🧭 Body Compass</h4>
+                            <p>I'm going to check in with my body compass before making one decision each day</p>
+                        </div>
+                        
+                        <div class="commitment-card" onclick="selectCommitment(this)">
+                            <h4>🛡️ Boundary Practice</h4>
+                            <p>I'm going to practice setting one boundary using the needs language</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Carry Forward</h3>
+                    <p>What's one word you'll carry from this experience into your week?</p>
+                    
+                    <div class="insight-input">
+                        <input type="text" placeholder="One word..." id="carryForward" style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1.2rem; text-align: center;">
+                    </div>
+                </div>
+
+                <div class="content-section" style="text-align: center; margin-top: 40px;">
+                    <h3>🌟 Thank You for Your Courage</h3>
+                    <p>You've taken an important step in building your emotional intelligence and communication skills. Remember, this is a practice, not a performance. Be gentle with yourself as you grow.</p>
+                    
+                    <button class="btn" onclick="showCompletionSummary()">Complete Session</button>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn btn-secondary" onclick="previousPhase()" id="prevBtn">Previous</button>
+                <div class="progress-text">
+                    <span id="phaseProgress">Phase 1 of 6</span>
+                </div>
+                <button class="btn" onclick="nextPhase()" id="nextBtn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPhaseIndex = 0;
+        const totalPhases = 6;
+        let userResponses = {};
+
+        function updatePhaseDisplay() {
+            // Hide all phases
+            document.querySelectorAll('.phase').forEach(phase => {
+                phase.classList.remove('active');
+            });
+            
+            // Show current phase
+            document.getElementById(`phase-${currentPhaseIndex}`).classList.add('active');
+            
+            // Update phase indicators
+            document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentPhaseIndex);
+            });
+            
+            // Update progress text
+            document.getElementById('phaseProgress').textContent = `Phase ${currentPhaseIndex + 1} of ${totalPhases}`;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.display = currentPhaseIndex === 0 ? 'none' : 'inline-block';
+            document.getElementById('nextBtn').textContent = currentPhaseIndex === totalPhases - 1 ? 'Complete' : 'Next';
+        }
+
+        function nextPhase() {
+            if (currentPhaseIndex < totalPhases - 1) {
+                currentPhaseIndex++;
+                updatePhaseDisplay();
+            } else {
+                showCompletionSummary();
+            }
+        }
+
+        function previousPhase() {
+            if (currentPhaseIndex > 0) {
+                currentPhaseIndex--;
+                updatePhaseDisplay();
+            }
+        }
+
+        function goToPhase(index) {
+            currentPhaseIndex = index;
+            updatePhaseDisplay();
+        }
+
+        function selectWeather(element) {
+            document.querySelectorAll('.weather-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function revealAnswer(element, type) {
+            const answer = element.querySelector('.answer');
+            answer.style.display = 'block';
+            element.classList.add(type);
+        }
+
+        function selectStation(element, stationType) {
+            document.querySelectorAll('.station-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            showStationContent(stationType);
+        }
+
+        function showStationContent(stationType) {
+            const content = document.getElementById('station-content');
+            
+            const stationContents = {
+                translation: `
+                    <div class="content-section">
+                        <h3>🗣️ Translation Station - Communication Practice</h3>
+                        <p>Practice the Feeling → Need → Request process with real scenarios:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4>Scenario: Friend keeps canceling plans at the last minute</h4>
+                            <div style="margin: 15px 0;">
+                                <strong>Weather (Feeling):</strong>
+                                <input type="text" placeholder="I feel..." style="width: 100%; padding: 10px; margin-top: 5px;">
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>Climate (Need):</strong>
+                                <input type="text" placeholder="I need..." style="width: 100%; padding: 10px; margin-top: 5px;">
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>Request:</strong>
+                                <textarea placeholder="Could you..." style="width: 100%; padding: 10px; margin-top: 5px; min-height: 60px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                body: `
+                    <div class="content-section">
+                        <h3>🧘 Body Wisdom Station - Felt Sense & Needs</h3>
+                        <p>Explore how different needs feel in your body:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4>Body Scan Exercise</h4>
+                            <p>Close your eyes and notice:</p>
+                            <ul>
+                                <li>How does "need for autonomy" feel in your body?</li>
+                                <li>Where do you feel "need for connection"?</li>
+                                <li>What does "need for rest" vs "need for stimulation" feel like?</li>
+                            </ul>
+                            <textarea placeholder="Describe what you noticed in your body scan..." style="width: 100%; min-height: 100px; padding: 15px; margin-top: 10px;"></textarea>
+                        </div>
+                    </div>
+                `,
+                boundary: `
+                    <div class="content-section">
+                        <h3>🛡️ Boundary Lab - Saying No While Staying Connected</h3>
+                        <p>Practice the "I care about you AND I need..." framework:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4>Scenario: Social event that doesn't feel safe right now</h4>
+                            <p><strong>Framework:</strong> "I care about you AND I need..."</p>
+                            <textarea placeholder="I care about you and I need to take care of my energy right now. Could we try..." style="width: 100%; min-height: 80px; padding: 15px;"></textarea>
+                        </div>
+                    </div>
+                `,
+                repair: `
+                    <div class="content-section">
+                        <h3>🔧 Repair Shop - When Communication Goes Wrong</h3>
+                        <p>Practice the repair formula:</p>
+                        
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <h4>Repair Formula</h4>
+                            <div style="margin: 15px 0;">
+                                <strong>1. Acknowledge impact:</strong>
+                                <input type="text" placeholder="I can see that my words/actions affected you..." style="width: 100%; padding: 10px; margin-top: 5px;">
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>2. Share need that led to behavior:</strong>
+                                <input type="text" placeholder="I was needing..." style="width: 100%; padding: 10px; margin-top: 5px;">
+                            </div>
+                            <div style="margin: 15px 0;">
+                                <strong>3. Make request for moving forward:</strong>
+                                <textarea placeholder="Could we..." style="width: 100%; padding: 10px; margin-top: 5px; min-height: 60px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            content.innerHTML = stationContents[stationType];
+        }
+
+        function selectCommitment(element) {
+            document.querySelectorAll('.commitment-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function showCompletionSummary() {
+            alert('🌟 Congratulations on completing your Recovery Support Group: Emotional Needs session!\n\nYou\'ve learned valuable skills for:\n• Distinguishing between feelings and needs\n• Translating emotions into clear requests\n• Building authentic connections in recovery\n• Communicating needs directly rather than through behaviors\n\nRemember: This is a practice, not a performance. Be gentle with yourself as you grow.\n\nYour recovery journey and emotional connection continues...');
+        }
+
+        // Initialize the app
+        updatePhaseDisplay();
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextPhase();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousPhase();
+            }
+        });
+
+        // Auto-save user inputs
+        function saveUserInput(inputId, value) {
+            userResponses[inputId] = value;
+            localStorage.setItem('connectionAppResponses', JSON.stringify(userResponses));
+        }
+
+        // Load saved responses
+        function loadSavedResponses() {
+            const saved = localStorage.getItem('connectionAppResponses');
+            if (saved) {
+                userResponses = JSON.parse(saved);
+            }
+        }
+
+        // Initialize saved responses
+        loadSavedResponses();
+    </script>
+</body>
+</html>
